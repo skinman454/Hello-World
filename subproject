@@ -1,0 +1,47 @@
+plugins {
+    id "org.sonarqube" version "2.7"
+    id 'jacoco'
+}
+
+def allTestCoverageFile = "${buildDir}/jacoco/allTestCoverage.exec"
+
+// This seems to be a jacoco task which can be used to merge reports.
+task jacocoMerge(type: JacocoMerge, group: 'verification') {
+    // ??????????????????????????????????????????
+}
+
+sonarqube {
+    properties {
+        property "sonar.scm.provider", "git"
+        property "sonar.jacoco.reportPaths", allTestCoverageFile
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'jacoco'
+
+    sonarqube {
+        properties {
+            property "sonar.jacoco.reportPaths", allTestCoverageFile
+        }
+    }
+}
+
+project(':projectA') {
+    dependencies {
+        compile project(':projectB')
+        compile project(':projectC')
+    }
+}
+
+project(':projectB') {
+    dependencies {
+        compile project(':projectC')
+    }
+}
+
+project(':projectC') {
+    dependencies {
+    }
+}
